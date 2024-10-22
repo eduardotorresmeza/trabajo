@@ -1,0 +1,116 @@
+<?xml version='1.0' encoding='UTF-8' ?> 
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <h:head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <h:outputStylesheet name="./css/default.css"/>
+        <h:outputStylesheet name="./css/cssLayout.css"/>
+        <h:outputStylesheet name="./css/cssEstilo.css"/>
+        <link rel="shortcut icon" href="/Validacion/resources/images/favicon.ico" type="image/x-icon"/>
+        <title>Validación</title>
+    </h:head>
+
+    <h:body>
+
+        <h:form id="frmIdle">
+            <p:idleMonitor timeout="1800000" onidle="dialogIdle.show()" />
+            <p:confirmDialog id="dialog" header="Sesión caducada" message="La sesión ha caducado, por favor, pulse el siguiente botón para volver a aceder a la aplicación" widgetVar="dialogIdle" closable="false">
+                <center><p:commandButton id="btnTimeOut" value="Aceptar" action="#{mbAcceso.logout}" oncomplete="dialogIdle.hide()"/></center>
+            </p:confirmDialog>
+        </h:form>
+
+        <script type="text/javascript">
+            function cerrar() {
+                document.getElementById('frmIdle:btnTimeOut').click();
+            }
+        </script>
+
+        <div id="top">
+            <h:form>
+                <div id="logo">
+                    <p:graphicImage value="/resources/images/logo.png" width="110" height="110"/> 
+                </div>
+                <div id="divH1"><h1>Validación</h1></div>
+                <div id="divSesionUsuario">
+                    <span>
+                        <p:outputLabel value="#{mbAcceso.usuario.userid}" />
+                        <br/>
+                        <p:outputLabel value="#{mbAcceso.empresaSeleccionada}" rendered="#{mbAcceso.rolEmpresa}"/>
+                        <p></p>
+                        <p:commandLink id="nonAjax" action="#{mbAcceso.irModificarPass}" ajax="false">
+                            <h:outputText value="Cambiar contraseña" />
+                        </p:commandLink>
+                    </span>
+                </div>
+                <div id="divMenu">
+                    <p:megaMenu style="width: 60%">
+                        <p:menuitem value="Principal" outcome="/principal" icon="ui-icon-home" />
+                        <p:menuitem value="CFDIs Recibidos" action="#{mbAcceso.irCDFIs}" icon="ui-icon-document" rendered="#{mbAcceso.rolEmpresa}"/>
+                        <p:submenu label="Configuración" icon="ui-icon-wrench" rendered="#{mbAcceso.rolEmpresa}">
+                            <p:column>
+                                <p:submenu >
+                                    <p:menuitem value="Empresa" action="#{mbAcceso.irConfiguracionEmpresa}" icon="ui-icon-star"/>
+                                    <p:menuitem value="Notificaciones" action="#{mbAcceso.irConfiguracionNotificaciones}" rendered="#{mbAcceso.configNotificaciones}" icon="ui-icon-comment"/>
+                                    <p:menuitem value="Plantilla" action="#{mbAcceso.irConfiguracionPlantilla}" icon="ui-icon-document"/>
+                                    <p:menuitem value="Correo Electrónico" action="#{mbAcceso.irConfiguracionEmail}" icon="ui-icon-mail-open"/>
+                                </p:submenu>
+                            </p:column>
+                        </p:submenu>
+                        <p:submenu label="Configuraciones" icon="ui-icon-wrench" rendered="#{mbAcceso.rolServidor}">
+                            <p:column>
+                                <p:submenu >
+                                    <p:menuitem value="Servicios" outcome="/Configuracion/configuracion?faces-redirect=true" icon="ui-icon-gear" />
+                                    <p:menuitem value="Servidor SMTP" outcome="/Configuracion/servicioSMTP?faces-redirect=true" icon="ui-icon-mail-closed"/>
+                                </p:submenu>
+                            </p:column>   
+                        </p:submenu>
+                        <p:menuitem value="Socios Comerciales" action="#{mbAcceso.irSociosComerciales}" icon="ui-icon-person" rendered="#{mbAcceso.rolEmpresa}"/>
+                        <p:submenu label="Usuarios" icon="ui-icon-person" rendered="#{mbAcceso.rolServidor}">
+                            <p:column>
+                                <p:submenu >
+                                    <p:menuitem value="Usuarios" outcome="/Usuario/usuarios?faces-redirect=true" icon="ui-icon-person" />
+                                    <p:menuitem value="Roles" outcome="/Usuario/roles?faces-redirect=true" icon="ui-icon-contact"/>
+                                </p:submenu>
+                            </p:column>   
+                        </p:submenu>
+                        <p:menuitem value="Empresas" outcome="/Empresa/empresas?faces-redirect=true" icon="ui-icon-star" rendered="#{mbAcceso.rolServidor}" />
+                        <p:menuitem value="Salir"  oncomplete="dialogLogout.show()" icon="ui-icon-extlink"/>
+                    </p:megaMenu> 
+                </div>
+            </h:form>
+
+            <h:form id="frmLogout">
+                <p:confirmDialog id="confirmDialog" message="¿Deseas salir de la aplicación?" header="Cerrar Sesión"
+                                 severity="alert" widgetVar="dialogLogout" showEffect="fade" hideEffect="fade" closable="false">
+                    <h:panelGrid columns="3" cellspacing="5" >
+                        <p:commandButton id="decline" value="Cancelar" onclick="dialogSalir.hide()" icon="ui-icon-close"/>
+                        <p:panel style="visibility: hidden"/>
+                        <p:commandButton id="confirm" value="Aceptar" update="" oncomplete="dialogSalir.hide()" action="#{mbAcceso.logout}" icon="ui-icon-check"/>                        
+                    </h:panelGrid>
+
+                </p:confirmDialog>
+            </h:form>
+
+            <ui:insert name="top">Top</ui:insert>
+        </div>
+        <div>
+            <div id="left">
+                <ui:insert name="left">Left</ui:insert>
+            </div>
+            <div>
+                <div id="right">
+                    <ui:insert name="right">Right</ui:insert>
+                </div>
+                <div id="cuerpo" class="center_content">
+                    <ui:insert name="content">Content</ui:insert>
+                </div>
+            </div>
+        </div>        
+    </h:body>
+
+</html>
